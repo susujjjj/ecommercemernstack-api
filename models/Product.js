@@ -1,12 +1,11 @@
-const mongoos = require("mongoose");
-const { boolean } = require("webidl-conversions");
+const mongoose = require("mongoose");
 
-const ProductSchema = new mongoos.Schema(
+const ProductSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, unique: true },
-    desc: { type: String, required: true, unique: true },
+    desc: { type: String, required: true,  },
     img: { type: String, required: true },
-    categories: { type: Array, required: true },
+    categories: { type: Array},
     size: { type: String },
     color: { type: String },
     price: { type: Number, required: true },
@@ -14,5 +13,5 @@ const ProductSchema = new mongoos.Schema(
   { timestamps: true } // createdAt: Date.now() you can say but if we are using mongoDB, use Function like timestamps: true
 );
 
-module.exports = mongoose.model("Product", ProductSchema);
+module.exports = mongoose.model ("Product", ProductSchema);
  
