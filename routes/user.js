@@ -1,3 +1,4 @@
+const User = require("../models/User");
 const {
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
@@ -12,7 +13,7 @@ const router = require("express").Router();
 
 // router.post("/userposttest", (req, res) => {
 //   const username = req.body.username;
-//   res.send("your username is: " + username); 
+//   res.send("your username is: " + username);
 // });
 
 //UPDATE
@@ -23,16 +24,15 @@ router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
       process.env.PASS_SEC
     ).toString();
   }
-  console.log(req.body, "req.body------");
-    console.log(req.body.password, "req.body.password----"); 
-    console.log(req.params, "req.params+++");
+  // console.log(req.body, "req.body------");
+  //   console.log(req.body.password, "req.body.password----");
+  //   console.log(req.params, "req.params+++");
   try {
     // console.log(updatedUser, "updatedUser-------");
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
         $set: req.body,
-        // $set: req.user,
       },
       { new: true }
     );
@@ -42,38 +42,35 @@ router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
   }
 });
 
-
 //DELETE
-router.delete("/:id", verifyTokenAndAuthorization , async (req, res) => {
+router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.params.id)
-    res.status(200).json("User has been deleted...")
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json("User has been deleted...");
+  } catch (err) {
+    res.status.apply(500).json(err);
   }
-  catch (err) {
-    res.status.apply(500).json(err)
-  }
-})
+});
 
 //GET USER
-router.get("/find/:id", verifyTokenAndAdmin , async (req, res) => {
+router.get("/find/:id", verifyTokenAndAdmin, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
+    const user = await User.findById(req.params.id);
     const { password, ...others } = user._doc;
-
     res.status(200).json(others);
-  }
-  catch (err) {
+    console.log(user , "uuuuuserrr++++++")
+  } catch (err) {
     res.status(500).json(err);
   }
-})
+});
 
 //GET ALL USER
-router.get("/", verifyTokenAndAdmin , async (req, res) => {
-  const query = req.query.new
+router.get("/", verifyTokenAndAdmin, async (req, res) => {
+  const query = req.query.new;
   try {
-    const users = query 
-    ? await User.find().sort({_id: -1}).limit(1) 
-    : await User.find();
+    const users = query
+      ? await User.find().sort({ _id: -1 }).limit(5)
+      : await User.find();
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json(err);
@@ -88,23 +85,24 @@ router.get("/stats", verifyTokenAndAdmin, async (req, res) => {
   try {
     const data = await User.aggregate([
       {
-        $match: {createdAt : { $gte: lastYear} }
+        $match: { createdAt: { $gte: lastYear } },
       },
       {
         $project: {
-          month: { $month: "$createdAt"},
+          month: { $month: "$createdAt" },
         },
       },
-      {$group: {
-        _id: "$month",
-        total: { $sum: 1 },
-      }}
+      {
+        $group: {
+          _id: "$month",
+          total: { $sum: 1 },
+        },
+      },
     ]);
     res.status(200).json(data);
-  }
-  catch(err) {
+  } catch (err) {
     res.status(500).json(err);
   }
-})
+});
 
 module.exports = router;
