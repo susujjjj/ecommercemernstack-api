@@ -2,6 +2,7 @@ const {
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
 } = require("./verifyToken");
+const CryptoJS = require("crypto-js");
 
 const router = require("express").Router();
 
@@ -17,16 +18,21 @@ const router = require("express").Router();
 //UPDATE
 router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
   if (req.body.password) {
-    req.body.password= CryptoJS.AES.encrypt(
+    req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
       process.env.PASS_SEC
     ).toString();
   }
+  console.log(req.body, "req.body------");
+    console.log(req.body.password, "req.body.password----"); 
+    console.log(req.params, "req.params+++");
   try {
+    // console.log(updatedUser, "updatedUser-------");
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
         $set: req.body,
+        // $set: req.user,
       },
       { new: true }
     );

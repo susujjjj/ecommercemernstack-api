@@ -36,13 +36,13 @@ router.post("/login", async(req, res) => {
       Originalpassword !== req.body.password && 
         res.status(401).json("Wrong credentials!");
 
-        const accessToken = jwt.sign({
+        const accessToken = jwt.sign(
+          {
             id: user._id, 
             isAdmin: user.isAdmin,
-
-            }, 
-            process.env.JWT_SEC,
-            {expiresIn: "3d"}
+          }, 
+          process.env.JWT_SEC,
+          {expiresIn: "3d"}
         )
 
         const {password, ...others} = user._doc;  

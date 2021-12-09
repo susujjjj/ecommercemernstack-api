@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: true } // createdAt: Date.now() you can say but if we are using mongoDB, use Function like timestamps: true
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("User", UserSchema);
